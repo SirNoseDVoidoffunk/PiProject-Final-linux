@@ -242,17 +242,22 @@ class Game:
 	def main_menu(self):
 		self.playing = False
 		self.menu = True
+		self.mainmenufont = pygame.font.Font('arcadeclassic.ttf', 56)
 
 		while not self.playing and self.menu:
 			self.screen.fill(BACKGROUND_COLOR)
 			pygame.display.update()
 			# pygame.key.set_repeat(500,30)
+                        
+			self.screen.blit(self.mainmenufont.render("Snake", 1, (255, 255, 255)), (500, 500))
+			self.screen.blit(self.mainmenufont.render("Classic", 1, (255, 255, 255)), (500, 700))
+			pygame.display.flip()
 
 			choise = dm.dumbmenu(self.screen, 
 				['Start Game',
 				'How To Play',
 				'Quit Game'],
-				64,64,'freesansbold',32,1.4,WHITE,WHITE, True)
+				64,64,'freesansbold',32,.7,WHITE,WHITE, True)
 			if choise == 0:
 				while self.play(pygame.event.get()):
 					pass
@@ -320,10 +325,10 @@ def main():
 
 	pygame.display.set_caption('PyGame Snake')
 
-	window = pygame.display.set_mode((500,500))
+	window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 	screen = pygame.display.get_surface()
 	clock = pygame.time.Clock()
-	font = pygame.font.Font('freesansbold.ttf', 20)
+	font = pygame.font.Font('arcadeclassic.ttf', 20)
 	game = Game(window, screen, clock, font)
 	game.main_menu()
 

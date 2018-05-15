@@ -142,29 +142,28 @@ class Snake:
             return False
 
 class Food:
-	def __init__(self, snake):
+	def __init__(self):
 		self.location = (0,0)
 		self.foods = []
-		self.snake = snake
 
 	def reset(self):
+		self.location = (0,0)
 		self.foods = []
-		self.spawn()
 
 	#method to spawn food at random location
-	def spawn(self):
+	def spawn(self, snake):
 		if len(self.foods) < 1:
 			self.location = self.__randomLocation()
 			#check if it spawns on snake, else relocate
-			while self.location == (bit for bit in self.snake.getSnake()):
-				self.location = (self.__randomLocation())
-				self.foods.append(self.location)
+			while self.location in snake.getSnake():
+				self.location = self.__randomLocation()
+			self.foods.append(self.location)
 
 	#check if any of the foods is eaten if so remove from foods
-	def is_eaten(self):
+	def is_eaten(self, snake):
 		eaten = True
-		if (food for food in self.foods) == self.snake.getHead():
-			self.foods.pop(index(food))
+		if snake.getHead() in self.foods:
+			self.foods.pop()
 		else:
 			eaten = False
 		return eaten
@@ -203,14 +202,14 @@ class Game:
 
 		self.nextDirection = DIRECTION_UP
 		self.snake = Snake(SNAKE_START_LOC, SNAKE_START_LENGTH)
-		self.food = Food(self.snake)
+		self.food = Food()
 
 	def play(self, events):
 		self.playing = True
 		self.menu = False
 
 		if self.playing:
-			self.food.spawn()
+			self.food.spawn(self.snake)
 			self.input(events)
 			self.update()
 			self.draw()
@@ -283,6 +282,7 @@ class Game:
 	def reset(self):
 		self.snake.reset()
 		self.food.reset()
+		self.food.spawn(self.snake)
 		self.nextDirection = DIRECTION_UP
 		self.fps = STARTING_FPS
 		self.score = 0
@@ -304,9 +304,9 @@ class Game:
 		self.snake.change_direction(self.nextDirection)
 		self.snake.move_snake()
 
-		if self.food.is_eaten():
+		if self.food.is_eaten(self.snake):
 			self.snake.add_bit()
-			self.food.spawn()
+			self.food.spawn(self.snake)
 			self.score += 50
 			#score code
 		if self.snake.check_collision() or self.snake.getHead()[0] < 1 or self.snake.getHead()[1] < 1 or self.snake.getHead()[0] > GRID[0] or self.snake.getHead()[1] > GRID[1]:

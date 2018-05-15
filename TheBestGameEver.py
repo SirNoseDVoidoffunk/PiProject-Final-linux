@@ -67,7 +67,7 @@ SNAKE_START_LOC = (25, 25)    # Initial snake location
 
 # Gams speed
 STARTING_FPS = 4
-FPS_INCREMENT_FREQUENCY = 80
+FPS_INCREMENT_FREQUENCY = 100
 
 #snake class
 #init with a starting point as a tupple and length in number of grid squares
@@ -155,7 +155,7 @@ class Food:
 		if len(self.foods) < 1:
 			self.location = self.__randomLocation()
 			#check if it spawns on snake, else relocate
-			while self.location in snake.getSnake():
+			while self.location in snake.getSnake() or self.location in self.foods:
 				self.location = self.__randomLocation()
 			self.foods.append(self.location)
 
@@ -163,7 +163,7 @@ class Food:
 	def is_eaten(self, snake):
 		eaten = True
 		if snake.getHead() in self.foods:
-			self.foods.pop()
+			self.foods.pop(self.foods.index(snake.getHead()))
 		else:
 			eaten = False
 		return eaten
@@ -203,13 +203,13 @@ class Game:
 		self.nextDirection = DIRECTION_UP
 		self.snake = Snake(SNAKE_START_LOC, SNAKE_START_LENGTH)
 		self.food = Food()
+		self.food.spawn(self.snake)
 
 	def play(self, events):
 		self.playing = True
 		self.menu = False
 
 		if self.playing:
-			self.food.spawn(self.snake)
 			self.input(events)
 			self.update()
 			self.draw()

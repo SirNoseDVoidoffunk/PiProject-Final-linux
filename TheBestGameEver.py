@@ -45,10 +45,10 @@ DIRECTION_RIGHT = 2
 
 #look up table for keys and directions, we can add joystic movement as well
 KEY_DIRECTION = {
-    K_w: DIRECTION_UP,    K_UP:    DIRECTION_UP,   
-    K_s: DIRECTION_DOWN,  K_DOWN:  DIRECTION_DOWN, 
-    K_a: DIRECTION_LEFT,  K_LEFT:  DIRECTION_LEFT, 
-    K_d: DIRECTION_RIGHT, K_RIGHT: DIRECTION_RIGHT,
+	K_w: DIRECTION_UP,		K_UP:    DIRECTION_UP,   
+	K_s: DIRECTION_DOWN,	K_DOWN:  DIRECTION_DOWN, 
+	K_a: DIRECTION_LEFT,	K_LEFT:  DIRECTION_LEFT, 
+	K_d: DIRECTION_RIGHT,	K_RIGHT: DIRECTION_RIGHT,
 }
 
 #color constants in RGB
@@ -142,6 +142,7 @@ class Food:
 		self.location = (0,0)
 		self.foods = []
 		self.snake = snake
+		self.spawn()
 
 	def reset(self):
 		self.foods = []
@@ -149,12 +150,12 @@ class Food:
 
 	#method to spawn food at random location
 	def spawn(self):
-		self.location = self.__randomLocation()
-		#check if it spawns on snake, else relocate
-		while self.location == (bit for bit in self.snake.getSnake()):
-			self.location = (self.__randomLocation())
-			self.foods.append(self.location)
-		return self.foods
+		if len(self.foods) < 1:
+			self.location = self.__randomLocation()
+			#check if it spawns on snake, else relocate
+			while self.location == (bit for bit in self.snake.getSnake()):
+				self.location = (self.__randomLocation())
+				self.foods.append(self.location)
 
 	#check if any of the foods is eaten if so remove from foods
 	def is_eaten(self):
@@ -269,7 +270,7 @@ class Game:
 				if event.type == QUIT:
 					pygame.quit()
 					sys.exit()
-				if event.key == K_ESCAPE:
+				elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
 					self.reset()
 		
 	def reset(self):
@@ -286,10 +287,10 @@ class Game:
 				pygame.quit
 				sys.exit()
 			#movement
-			elif event.key in KEY_DIRECTION:
+			elif event.type == pygame.KEYDOWN and event.key in KEY_DIRECTION:
 				self.nextDirection = KEY_DIRECTION[event.key]
 			#back to main menu, i can't be bothered to figure out pauses
-			elif event.key == K_ESCAPE:
+			elif event.type == pygame.KEYDOWN and event.key == K_ESCAPE:
 				self.reset()
 
 	def update(self):
@@ -298,7 +299,7 @@ class Game:
 
 		if self.food.is_eaten():
 			self.snake.add_bit()
-			self.foods.spawn()
+			self.food.spawn()
 			self.score += 50
 			#score code
 		#if self.snake.check_collision() or self.world.collidepoint(self.snake.getHead()):

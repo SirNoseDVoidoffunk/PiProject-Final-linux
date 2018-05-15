@@ -152,8 +152,8 @@ class Food:
 		self.location = self.__randomLocation()
 		#check if it spawns on snake, else relocate
 		while self.location == (bit for bit in self.snake.getSnake()):
-			self.location = (__randomLocation())
-			self.food.append(self.location)
+			self.location = (self.__randomLocation())
+			self.foods.append(self.location)
 		return self.foods
 
 	#check if any of the foods is eaten if so remove from foods
@@ -228,7 +228,7 @@ class Game:
 		for snake in self.snake.getSnake():
 			pygame.draw.rect(self.screen, SNAKE_BODY_COLOR, (blockSize[0] * (snake[0]-1), blockSize[1] * (snake[1]-1), blockSize[0], blockSize[1]))
 		for food in self.food.get_foods():
-			pygame.draw.rect(self.screen, APPLE_COLOR, (blockSize[0] * (food[0]-1), blockSize[1] * (food[1]-1)), blockSize)
+			pygame.draw.rect(self.screen, APPLE_COLOR, (blockSize[0] * (food[0]-1), blockSize[1] * (food[1]-1)), blockSize[0], blockSize[1])
 
 		self.screen.blit(self.font.render("Score: " + '{:09d}'.format(self.score), 1, (255, 255, 255)), (150, 20))
 		pygame.display.flip()

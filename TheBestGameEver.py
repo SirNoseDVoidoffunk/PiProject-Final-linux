@@ -62,7 +62,7 @@ WHITE = (255,255,255)
 GRID = (50, 50) # X, Y
 
 #snake based constants
-SNAKE_START_LENGTH = 4          # Initial snake length in segments
+SNAKE_START_LENGTH = 5          # Initial snake length in segments
 SNAKE_START_LOC = (25, 25)    # Initial snake location
 
 # Gams speed
@@ -105,6 +105,10 @@ class Snake:
     def getSnake(self):
     	return self.snakeBits
 
+    #return only tail
+    def getSnakeTail(self):
+    	return self.snakeBits[1:]
+
     #move the snake by 1 block in a direction
     def move_snake(self):
         head = self.getHead();
@@ -142,7 +146,6 @@ class Food:
 		self.location = (0,0)
 		self.foods = []
 		self.snake = snake
-		self.spawn()
 
 	def reset(self):
 		self.foods = []
@@ -207,11 +210,13 @@ class Game:
 		self.menu = False
 
 		if self.playing:
+			self.food.spawn()
 			self.input(events)
 			self.update()
 			self.draw()
 		else: 
-			self.game_over()
+			self.playing = False
+			self.menu = True
 
 		self.clock.tick(self.fps)
 
@@ -226,10 +231,11 @@ class Game:
 		windowSize = self.window.get_size()
 		blockSize = (int(windowSize[0]/GRID[0]),int(windowSize[1]/GRID[1]))
 
-		for snake in self.snake.getSnake():
+		pygame.draw.rect(self.screen, SNAKE_HEAD_COLOR, (blockSize[0] * (self.snake.getHead()[0]-1), blockSize[1] * (self.snake.getHead()[1]-1), blockSize[0], blockSize[1]))
+		for snake in self.snake.getSnakeTail():
 			pygame.draw.rect(self.screen, SNAKE_BODY_COLOR, (blockSize[0] * (snake[0]-1), blockSize[1] * (snake[1]-1), blockSize[0], blockSize[1]))
 		for food in self.food.get_foods():
-			pygame.draw.rect(self.screen, APPLE_COLOR, (blockSize[0] * (food[0]-1), blockSize[1] * (food[1]-1)), blockSize[0], blockSize[1])
+			pygame.draw.rect(self.screen, APPLE_COLOR, (blockSize[0] * (food[0]-1), blockSize[1] * (food[1]-1), blockSize[0], blockSize[1]))
 
 		self.screen.blit(self.font.render("Score: " + '{:09d}'.format(self.score), 1, (255, 255, 255)), (150, 20))
 		pygame.display.flip()
@@ -241,7 +247,7 @@ class Game:
 		while not self.playing and self.menu:
 			self.screen.fill(BACKGROUND_COLOR)
 			pygame.display.update()
-			pygame.key.set_repeat(500,30)
+			# pygame.key.set_repeat(500,30)
 
 			choise = dm.dumbmenu(self.screen, 
 				['Start Game',
@@ -251,6 +257,7 @@ class Game:
 			if choise == 0:
 				while self.play(pygame.event.get()):
 					pass
+				self.game_over()
 			if choise == 1:
 				#do in draw
 				print ("Use the arrow keys to control your snake. Eat as many apples as you can to grow as long as possible. But don't hit the wall, or eat your tail!")
@@ -263,7 +270,7 @@ class Game:
 		while True:
 			self.screen.fill((255, 0, 0))
 			self.screen.blit(self.font.render("Game over!", 1, (255, 255, 255)), (150, 150))
-			self.screen.blit(self.font.render("Your score is: %d" % self.score, 1, (255, 255, 255)), (140, 180))
+			self.screen.blit(self.font.render("Your score is: " + str(self.score), 1, (255, 255, 255)), (140, 180))
 			self.screen.blit(self.font.render("Press Escape to return to main menu", 1, (255, 255, 255)), (20, 200))
 			pygame.display.flip()
 			for event in pygame.event.get():
@@ -284,7 +291,7 @@ class Game:
 	def input(self, events):
 		for event in events:
 			if event.type == QUIT:
-				pygame.quit
+				pygame.quit()
 				sys.exit()
 			#movement
 			elif event.type == pygame.KEYDOWN and event.key in KEY_DIRECTION:
@@ -302,9 +309,9 @@ class Game:
 			self.food.spawn()
 			self.score += 50
 			#score code
-		#if self.snake.check_collision() or self.world.collidepoint(self.snake.getHead()):
+		if self.snake.check_collision() or self.snake.getHead()[0] < 1 or self.snake.getHead()[1] < 1 or self.snake.getHead()[0] > GRID[0] or self.snake.getHead()[1] > GRID[1]:
 			#game over screen
-			#self.game_over()
+			self.playing = False
 
 
 

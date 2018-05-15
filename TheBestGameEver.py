@@ -38,10 +38,10 @@ import sys, random, pygame, dumbmenu as dm
 from pygame import *	#needed to reference keys directly instead of pygame.K_xxxx
 
 #directional constants
-DIRECTION_UP = 0
-DIRECTION_DOWN = 1
-DIRECTION_LEFT = 2
-DIRECTION_RIGHT = 3
+DIRECTION_UP = 1
+DIRECTION_DOWN = 0
+DIRECTION_LEFT = 3
+DIRECTION_RIGHT = 2
 
 #look up table for keys and directions, we can add joystic movement as well
 KEY_DIRECTION = {
@@ -217,7 +217,7 @@ class Game:
 		self.ticks += 1
 		if self.ticks % FPS_INCREMENT_FREQUENCY == 0: self.fps += 1
 
-		return playing
+		return self.playing
 		
 	def draw(self):
 		self.screen.fill(BACKGROUND_COLOR)
@@ -226,11 +226,11 @@ class Game:
 		blockSize = (int(windowSize[0]/GRID[0]),int(windowSize[1]/GRID[1]))
 
 		for snake in self.snake.getSnake():
-			pygame.draw.rect(self.screen, SNAKE_BODY_COLOR, (blockSize[0] * (snake[0]-1), blockSize[1] * (snake[1]-1)), blockSize)
+			pygame.draw.rect(self.screen, SNAKE_BODY_COLOR, (blockSize[0] * (snake[0]-1), blockSize[1] * (snake[1]-1), blockSize[0], blockSize[1]))
 		for food in self.food.get_foods():
 			pygame.draw.rect(self.screen, APPLE_COLOR, (blockSize[0] * (food[0]-1), blockSize[1] * (food[1]-1)), blockSize)
 
-		self.screen.blit(self.font.render("Score: " + '{:09d}'.format(score), 1, (255, 255, 255)), (150, 20))
+		self.screen.blit(self.font.render("Score: " + '{:09d}'.format(self.score), 1, (255, 255, 255)), (150, 20))
 		pygame.display.flip()
 
 	def main_menu(self):
@@ -255,7 +255,7 @@ class Game:
 				print ("Use the arrow keys to control your snake. Eat as many apples as you can to grow as long as possible. But don't hit the wall, or eat your tail!")
 			if choise == 2:
 				self.menu = False
-				pygame.quit
+				pygame.quit()
 				sys.exit()
 
 	def game_over(self):
@@ -287,7 +287,7 @@ class Game:
 				sys.exit()
 			#movement
 			elif event.key in KEY_DIRECTION:
-				self.nextDirection = KEY_DIRECTION[e.key]
+				self.nextDirection = KEY_DIRECTION[event.key]
 			#back to main menu, i can't be bothered to figure out pauses
 			elif event.key == K_ESCAPE:
 				self.reset()
@@ -301,9 +301,9 @@ class Game:
 			self.foods.spawn()
 			self.score += 50
 			#score code
-		if self.snake.check_collision() or self.world.collidepoint(self.snake.getHead()):
+		#if self.snake.check_collision() or self.world.collidepoint(self.snake.getHead()):
 			#game over screen
-			self.game_over()
+			#self.game_over()
 
 
 
@@ -312,7 +312,7 @@ def main():
 
 	pygame.display.set_caption('PyGame Snake')
 
-	window = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+	window = pygame.display.set_mode((500,500))
 	screen = pygame.display.get_surface()
 	clock = pygame.time.Clock()
 	font = pygame.font.Font('freesansbold.ttf', 20)

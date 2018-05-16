@@ -124,7 +124,7 @@ def dumbmenu(screen, menu, x_pos = 100, y_pos = 100, font = None,
 	if font == None:
 		myfont = pygame.font.Font(None, size)
 	else:
-		myfont = pygame.font.SysFont(font, size)
+		myfont = pygame.font.Font('arcadeclassic.ttf', size)
 	cursorpos = 0
 	renderWithChars = False
 	for i in menu:
